@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dynamic Infographic Video"
+  short_description: "Create narrated infographic videos."
+  default_prompt: "Use $dynamic-infographic-video to turn this document into a narrated 16:9 animated infographic video and export the final MP4."

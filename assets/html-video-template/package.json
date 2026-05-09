@@ -1,0 +1,11 @@
+{
+  "name": "dynamic-infographic-video-project",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "export": "node export-video.js"
+  },
+  "devDependencies": {
+    "ffmpeg-static": "^5.2.0"
+  }
+}

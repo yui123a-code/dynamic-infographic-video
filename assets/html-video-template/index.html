@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dynamic Infographic Video</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="viewport">
+      <div class="stage-shell" id="stageShell">
+        <section class="stage" id="stage">
+          <div class="background-grid" aria-hidden="true"></div>
+
+          <article class="scene scene-1 active">
+            <div class="scene-content title-layout">
+              <div class="kicker anim">Animated technical infographic</div>
+              <div class="title-frame anim" style="--delay: .25s">
+                <h1>Replace With Core Title</h1>
+                <p>Replace with the key problem or question.</p>
+              </div>
+              <div class="diagram-row anim" style="--delay: 1.2s">
+                <div class="node">Input</div>
+                <div class="arrow"></div>
+                <div class="node primary">Logic</div>
+                <div class="arrow"></div>
+                <div class="node">Output</div>
+              </div>
+              <div class="risk-pill anim" style="--delay: 3.2s">Key tension</div>
+            </div>
+          </article>
+
+          <article class="scene scene-2">
+            <div class="scene-content">
+              <header class="scene-header anim">
+                <span>02</span>
+                <h2>Replace With Scene Title</h2>
+                <p>One sentence scene summary.</p>
+              </header>
+              <div class="two-column">
+                <div class="panel anim" style="--delay: .8s">
+                  <h3>Before</h3>
+                  <div class="module-grid small-grid" data-count="8"></div>
+                </div>
+                <div class="panel anim" style="--delay: 1.4s">
+                  <h3>After</h3>
+                  <div class="module-grid small-grid" data-count="12"></div>
+                </div>
+              </div>
+              <div class="callout anim" style="--delay: 4.8s">Replace with conclusion</div>
+            </div>
+          </article>
+
+          <article class="scene scene-3">
+            <div class="scene-content">
+              <header class="scene-header anim">
+                <span>03</span>
+                <h2>Replace With Scene Title</h2>
+                <p>Use SVG, cards, counters, or charts here.</p>
+              </header>
+              <svg class="chart anim" style="--delay: .8s" viewBox="0 0 1100 520" aria-hidden="true">
+                <line class="axis" x1="90" y1="450" x2="1030" y2="450"></line>
+                <line class="axis" x1="90" y1="450" x2="90" y2="80"></line>
+                <path class="draw-line cyan-line" d="M90 450 C260 410 390 330 540 290 S800 210 1000 130"></path>
+              </svg>
+              <div class="callout anim" style="--delay: 4.8s">Replace with takeaway</div>
+            </div>
+          </article>
+
+          <article class="scene scene-4">
+            <div class="scene-content title-layout">
+              <div class="title-frame anim">
+                <h1>Final Thesis</h1>
+                <p>Replace with the final one-sentence conclusion.</p>
+              </div>
+            </div>
+          </article>
+
+          <div class="timeline-strip" aria-hidden="true"><span id="timelineFill"></span></div>
+        </section>
+      </div>
+      <nav class="controls">
+        <button id="restartBtn" type="button">Replay</button>
+        <button id="pauseBtn" type="button">Pause</button>
+        <span id="timeReadout">00:00 / --:--</span>
+      </nav>
+    </main>
+    <script src="./timeline.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

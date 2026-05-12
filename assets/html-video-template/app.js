@@ -12,6 +12,7 @@
   const sceneDefs = Array.isArray(timeline.scenes) && timeline.scenes.length ? timeline.scenes : fallbackTimeline.scenes;
   const totalDuration = Number(timeline.durationSeconds) || Math.max(...sceneDefs.map((scene) => Number(scene.end) || 0));
   const backgroundTheme = timeline.background?.theme || "blueprint";
+  const visualMode = timeline.source?.mode || timeline.visualMode || "standalone";
   const params = new URLSearchParams(window.location.search);
   const exportMode = params.has("export");
   const initialTime = Math.max(0, Math.min(totalDuration, Number(params.get("start") || 0)));
@@ -29,7 +30,26 @@
   let lastActiveScene = 0;
 
   document.body.dataset.theme = backgroundTheme;
+  document.body.dataset.visualMode = visualMode;
   document.body.classList.toggle("export-mode", exportMode);
+
+  function attachBackplates() {
+    scenes.forEach((scene) => {
+      if (scene.element) {
+        const duration = Math.max(1, (Number(scene.end) || 0) - (Number(scene.start) || 0));
+        scene.element.style.setProperty("--scene-duration", `${duration}s`);
+      }
+      const asset = scene.backplate || scene.slideAsset || scene.slide?.asset;
+      if (!asset || !scene.element) return;
+      const image = document.createElement("img");
+      image.className = "slide-backplate";
+      image.src = asset;
+      image.alt = "";
+      image.decoding = "async";
+      scene.element.prepend(image);
+      scene.element.classList.add("has-backplate");
+    });
+  }
 
   function buildGrids() {
     document.querySelectorAll(".module-grid").forEach((grid) => {
@@ -108,6 +128,7 @@
   restartBtn.addEventListener("click", restart);
   window.addEventListener("resize", fitStage);
 
+  attachBackplates();
   buildGrids();
   fitStage();
   const ready = () => {

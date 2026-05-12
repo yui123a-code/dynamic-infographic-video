@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 from pathlib import Path
 
@@ -27,7 +28,20 @@ def main() -> int:
         shutil.rmtree(output_dir)
 
     shutil.copytree(template_dir, output_dir)
+    runtime_dir = skill_dir / ".runtime" / "node"
+    runtime_config = {
+        "skillDir": str(skill_dir),
+        "runtimeDir": str(runtime_dir),
+        "nodeModules": str(runtime_dir / "node_modules"),
+        "initCommand": f"python {skill_dir / 'scripts' / 'init_video_runtime.py'}",
+    }
+    (output_dir / ".skill-runtime.json").write_text(
+        json.dumps(runtime_config, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     print(output_dir)
+    if not (runtime_dir / "node_modules").exists():
+        print(f"Shared runtime is not initialized yet. Run once: {runtime_config['initCommand']}")
     return 0
 
 

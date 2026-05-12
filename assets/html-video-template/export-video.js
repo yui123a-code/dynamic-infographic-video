@@ -3,6 +3,20 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 const Module = require("module");
 
+const ROOT = __dirname;
+const RUNTIME_CONFIG_PATH = path.join(ROOT, ".skill-runtime.json");
+
+function readRuntimeConfig() {
+  if (!fs.existsSync(RUNTIME_CONFIG_PATH)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(RUNTIME_CONFIG_PATH, "utf8"));
+  } catch (error) {
+    console.log(`Warning: could not read ${RUNTIME_CONFIG_PATH}: ${error.message}`);
+    return {};
+  }
+}
+
+const runtimeConfig = readRuntimeConfig();
 const bundledNodeModules = path.join(
   process.env.USERPROFILE || "",
   ".cache",
@@ -13,15 +27,47 @@ const bundledNodeModules = path.join(
   "node_modules",
 );
 
-if (fs.existsSync(bundledNodeModules)) {
-  process.env.NODE_PATH = [process.env.NODE_PATH, bundledNodeModules].filter(Boolean).join(path.delimiter);
+function nodeModulesFromRuntimeDir(runtimeDir) {
+  return runtimeDir ? path.join(runtimeDir, "node_modules") : null;
+}
+
+const candidateNodeModules = [
+  process.env.DYNAMIC_INFOGRAPHIC_VIDEO_NODE_MODULES,
+  nodeModulesFromRuntimeDir(process.env.DYNAMIC_INFOGRAPHIC_VIDEO_RUNTIME),
+  runtimeConfig.nodeModules,
+  nodeModulesFromRuntimeDir(runtimeConfig.runtimeDir),
+  bundledNodeModules,
+  path.join(ROOT, "node_modules"),
+].filter(Boolean);
+
+const existingNodeModules = [...new Set(candidateNodeModules)].filter((modulePath) => fs.existsSync(modulePath));
+if (existingNodeModules.length) {
+  process.env.NODE_PATH = [process.env.NODE_PATH, ...existingNodeModules].filter(Boolean).join(path.delimiter);
   Module._initPaths();
 }
 
-const { chromium } = require("playwright");
+function requireOrExplain(packageName) {
+  try {
+    return require(packageName);
+  } catch (error) {
+    if (packageName !== "playwright") throw error;
+    const initCommand =
+      runtimeConfig.initCommand ||
+      "python C:\\Users\\31184\\.codex\\skills\\dynamic-infographic-video\\scripts\\init_video_runtime.py";
+    throw new Error(
+      [
+        "Playwright was not found for this video project.",
+        "Initialize the shared dynamic-infographic-video runtime once, then export again:",
+        `  ${initCommand}`,
+        "You can also set DYNAMIC_INFOGRAPHIC_VIDEO_NODE_MODULES to an existing node_modules directory.",
+      ].join("\n"),
+    );
+  }
+}
+
+const { chromium } = requireOrExplain("playwright");
 const timeline = require("./timeline.js");
 
-const ROOT = __dirname;
 const DIST_DIR = path.join(ROOT, "dist");
 const RAW_DIR = path.join(DIST_DIR, "raw-recording");
 const FINAL_WEBM = path.join(DIST_DIR, "infographic_video.webm");
